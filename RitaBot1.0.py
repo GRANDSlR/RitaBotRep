@@ -6,7 +6,7 @@ import os
 
 
 # token = '5760104271:AAGeQlglQvkTiAHEUlCpTrn2NuAl-sAA2X0' #alpha bot
-token='6125433165:AAGf3tSiymltFchIuuH0T6F2FdvVV-czzAI' #beta bot
+token='6125433165:AAGf3tSiymltFchIuuH0T6F2FdvVV-czzAI' # rita
 bot = telebot.TeleBot(token)
 # @a7sd98Bot
 
@@ -130,7 +130,6 @@ def get_sub_at_day(subject, day):
   
   else:
     return subject[day].find("div", class_=f"pair lw_{day} added").find("div", class_="subject").find("a").text
-    
 
 
 @bot.message_handler(content_types=['text'])
@@ -158,8 +157,6 @@ def get_text(message):
     week=time.strftime("%A")
     up_state(id_, (int)(time.strftime('%w'))+1, 1)
     print_schedule(id_, (int)(time.strftime('%w'))+1)
-
-
 
 @bot.callback_query_handler(func=lambda call: True)# ответ на меню заметок
 def check_callback_data(call):
@@ -192,7 +189,6 @@ def check_callback_data(call):
     elif(read_menu_flag()=='3'):
       bot.send_message(id_, f"Вы уверены, что хотите удалить {call.data}?")
       bot.register_next_step_handler(call.message, lambda msg: delete_sub(msg, call.data))
-
 
 
 def delete_sub(message, name):
@@ -270,7 +266,7 @@ def get_remaining_time():
   hours = current_time.tm_hour
   minutes = current_time.tm_min
   seconds = current_time.tm_sec
-  return (24 * 60 * 60) - (hours * 60 * 60) - (minutes * 60) - seconds
+  return (24 * 3600 - 18000) - (hours * 60 * 60) - (minutes * 60) - seconds
 
 
 if __name__ == "__main__":
