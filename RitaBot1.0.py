@@ -59,6 +59,10 @@ def up_state(id_, day, f):
     bot.send_message(id_,"Расписание не обновлено")
 
 def up_state_check(day):
+
+  responce = requests.get(url_KBP, headers=headers)
+  soup=BS(responce.text, "lxml")
+
   zameny=soup.find("tr", class_="zamena").find_all("th")
 
   if ("Замен нет" in zameny[day].get_text()):
@@ -262,11 +266,21 @@ def inlineKeyboard_init():
 
 def get_remaining_time():
 
+  current_time = time.time()
+  target_time = time.mktime(time.strptime(time.strftime("%Y-%m-%d 19:30:00"), "%Y-%m-%d %H:%M:%S"))
+  time_diff = target_time - current_time
+  return int(time_diff)
+
+def time_gateway():
+
   current_time = time.localtime()
   hours = current_time.tm_hour
-  minutes = current_time.tm_min
-  seconds = current_time.tm_sec
-  return (24 * 3600 - 18000) - (hours * 60 * 60) - (minutes * 60) - seconds
+
+  if(hours>10 and hours<20):
+    return True
+  else:
+    return False
+
 
 
 if __name__ == "__main__":
@@ -276,17 +290,17 @@ if __name__ == "__main__":
 
         print(f'Мониторинг за чатом {id_} работает')
 
-        responce = requests.get(url_KBP, headers=headers)
-        soup=BS(responce.text, "lxml")
+        if(time_gateway()):
 
-        if(up_state_check((int)(time.strftime('%w'))+1)=="true"):
+          if(up_state_check((int)(time.strftime('%w'))+1)=="true"):
 
             up_state(id_, (int)(time.strftime('%w'))+1, 1)
             print_schedule(id_, (int)(time.strftime('%w'))+1)
             
             time.sleep(get_remaining_time())
+        else:
+          time.sleep(1000)
 
-        time.sleep(900)
   except Exception as e:
     print(e)
     time.sleep(30)  
