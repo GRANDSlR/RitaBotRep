@@ -22,7 +22,7 @@ headers = {
 
 id_=1819018345
 
-path = "..\\BotFiles\\"
+path = "BotFiles\\"
 
 # path = "BotFiles\\"
 
