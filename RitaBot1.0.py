@@ -3,10 +3,12 @@ from datetime import date, timedelta
 from telebot import types
 from bs4 import BeautifulSoup as BS
 import os
+from TimeOperator import *
 
 
 # token = '5760104271:AAGeQlglQvkTiAHEUlCpTrn2NuAl-sAA2X0' #alpha bot
-token='6125433165:AAGf3tSiymltFchIuuH0T6F2FdvVV-czzAI' # rita
+# token='6125433165:AAGf3tSiymltFchIuuH0T6F2FdvVV-czzAI' # rita
+token='6990977891:AAGFhYZT3dEV4ej1lvD0AKBnuwbWod2UBCA' # test bot
 bot = telebot.TeleBot(token)
 # @a7sd98Bot
 
@@ -20,7 +22,7 @@ headers = {
 
 id_=1819018345
 
-path = "BotFiles\\"
+path = "..\\BotFiles\\"
 
 # path = "BotFiles\\"
 
@@ -264,25 +266,6 @@ def inlineKeyboard_init():
 
   return inline_markup
 
-def get_remaining_time():
-
-  current_time = time.time()
-  target_time = time.mktime(time.strptime(time.strftime("%Y-%m-%d 19:30:00"), "%Y-%m-%d %H:%M:%S"))
-  time_diff = target_time - current_time
-  return int(time_diff)
-
-def time_gateway():
-
-  current_time = time.localtime()
-  hours = current_time.tm_hour
-
-  if(hours>10 and hours<20):
-    return True
-  else:
-    return False
-
-
-
 if __name__ == "__main__":
   try:
     threading.Thread(target=bot.infinity_polling, name='bot_infinity_polling', daemon=True).start()
@@ -290,14 +273,14 @@ if __name__ == "__main__":
 
         print(f'Мониторинг за чатом {id_} работает')
 
-        if(time_gateway()):
+        if(TimeOperator.time_gateway()):
 
           if(up_state_check((int)(time.strftime('%w'))+1)=="true"):
 
             up_state(id_, (int)(time.strftime('%w'))+1, 1)
             print_schedule(id_, (int)(time.strftime('%w'))+1)
             
-            time.sleep(get_remaining_time())
+            time.sleep(TimeOperator.get_remaining_time(True if (TimeOperator.curr_hour()>20 or TimeOperator.curr_hour()<10) else False))
         else:
           time.sleep(1000)
 
