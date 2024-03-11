@@ -1,33 +1,33 @@
-import time
+import time, datetime
+
 
 class TimeOperator:
+
+    secondMessageTime=[19, 30]
+
     @staticmethod
     def get_remaining_time(flag):
 
         current_time = time.time()
 
         if(flag):
-            target_time = time.mktime(time.strptime(time.strftime("%Y-%m-%d 19:30:00"), "%Y-%m-%d %H:%M:%S"))
-            time_diff = target_time - current_time
-            return int(time_diff)
+            target_time = time.mktime(time.strptime(time.strftime(f"%Y-%m-%d {TimeOperator.secondMessageTime[0]}:{TimeOperator.secondMessageTime[1]}:00"), "%Y-%m-%d %H:%M:%S"))
+            return int(target_time - current_time)
         else:
             target_time = time.mktime(time.strptime(time.strftime("%Y-%m-%d 23:59:00"), "%Y-%m-%d %H:%M:%S"))
-            time_diff = target_time - current_time
-            return int(time_diff)+36000
+            return int(target_time - current_time)+36000
         
     @staticmethod
     def time_gateway():
 
-        current_time = time.localtime()
-        hours = current_time.tm_hour
+        current_time = datetime.datetime.now().time()
 
-        if(hours>=10 and hours<=20):
+        set_time = datetime.time(TimeOperator.secondMessageTime[0], TimeOperator.secondMessageTime[1])
+
+        if (current_time > datetime.time(9, 0) and current_time < set_time):
             return True
         else:
             return False
-
-    @staticmethod
-    def curr_hour():
-
-        current_time = time.localtime()
-        return current_time.tm_hour
+    
+if __name__ == "__main__":
+    print(TimeOperator.time_gateway())
