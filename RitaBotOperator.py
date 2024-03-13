@@ -286,5 +286,6 @@ if __name__ == "__main__":
           time.sleep(1000)
 
   except Exception as e:
-    print(e.with_traceback)
+    print(e)
+    print(e.args)
     time.sleep(30)  
