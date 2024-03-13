@@ -24,7 +24,7 @@ class TimeOperator:
 
         set_time = datetime.time(TimeOperator.secondMessageTime[0], TimeOperator.secondMessageTime[1])
 
-        if (current_time > datetime.time(9, 0) and current_time < set_time):
+        if (current_time > datetime.time(10, 0) and current_time < set_time):
             return True
         else:
             return False

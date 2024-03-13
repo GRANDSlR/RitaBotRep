@@ -7,8 +7,8 @@ from TimeOperator import *
 
 
 # token = '5760104271:AAGeQlglQvkTiAHEUlCpTrn2NuAl-sAA2X0' # realt bot
-token='6125433165:AAGf3tSiymltFchIuuH0T6F2FdvVV-czzAI' # rita
-# token='6990977891:AAGFhYZT3dEV4ej1lvD0AKBnuwbWod2UBCA' # test bot
+# token='6125433165:AAGf3tSiymltFchIuuH0T6F2FdvVV-czzAI' # rita
+token='6990977891:AAGFhYZT3dEV4ej1lvD0AKBnuwbWod2UBCA' # test bot
 bot = telebot.TeleBot(token)
 # @a7sd98Bot
 
@@ -270,9 +270,10 @@ def inlineKeyboard_init():
 if __name__ == "__main__":
   try:
     threading.Thread(target=bot.infinity_polling, name='bot_infinity_polling', daemon=True).start()
-    while True:
+    
+    print(f'Мониторинг за чатом {id_} работает')
 
-        print(f'Мониторинг за чатом {id_} работает')
+    while True:
 
         if(TimeOperator.time_gateway()):
 
@@ -283,7 +284,7 @@ if __name__ == "__main__":
             
             time.sleep(TimeOperator.get_remaining_time(True if TimeOperator.time_gateway() else False))
         else:
-          time.sleep(1000)
+          time.sleep(30)
 
   except Exception as e:
     print(e.with_traceback)
