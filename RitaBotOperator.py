@@ -268,8 +268,10 @@ def inlineKeyboard_init():
 
 
 if __name__ == "__main__":
+
+  threading.Thread(target=bot.infinity_polling, name='bot_infinity_polling', daemon=True).start()
+
   try:
-    threading.Thread(target=bot.infinity_polling, name='bot_infinity_polling', daemon=True).start()
     
     print(f'Мониторинг за чатом {id_} работает')
 
@@ -287,5 +289,8 @@ if __name__ == "__main__":
           time.sleep(30)
 
   except Exception as e:
-    print(e.with_traceback)
+    bot.send_message(id_, e)
+    bot.send_message(id_, e.args)
+    print(e)
+    print(e.args)
     time.sleep(30)  
