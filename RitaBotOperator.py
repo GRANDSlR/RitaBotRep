@@ -6,6 +6,7 @@ import os
 from TimeOperator import *
 
 
+
 # token = '5760104271:AAGeQlglQvkTiAHEUlCpTrn2NuAl-sAA2X0' # realt bot
 # token='6125433165:AAGf3tSiymltFchIuuH0T6F2FdvVV-czzAI' # rita
 token='6990977891:AAGFhYZT3dEV4ej1lvD0AKBnuwbWod2UBCA' # test bot
@@ -267,6 +268,30 @@ def inlineKeyboard_init():
   return inline_markup
 
 
+def schedule_checker():
+
+  if(up_state_check((int)(time.strftime('%w'))+1)=="true"):
+
+    up_state(id_, (int)(time.strftime('%w'))+1, 1)
+    print_schedule(id_, (int)(time.strftime('%w'))+1)
+
+    if (TimeOperator.sleep_until_evening() == False):
+      return
+
+    while True:
+
+      if (TimeOperator.time_gateway()):
+
+        up_state(id_, (int)(time.strftime('%w'))+1, 1)
+        print_schedule(id_, (int)(time.strftime('%w'))+1)
+
+        TimeOperator.sleep_until_next_day()
+
+        break
+
+      time.sleep(30) 
+
+
 if __name__ == "__main__":
 
   threading.Thread(target=bot.infinity_polling, name='bot_infinity_polling', daemon=True).start()
@@ -277,20 +302,12 @@ if __name__ == "__main__":
 
     while True:
 
-        if(TimeOperator.time_gateway()):
+      schedule_checker()
 
-          if(up_state_check((int)(time.strftime('%w'))+1)=="true"):
-
-            up_state(id_, (int)(time.strftime('%w'))+1, 1)
-            print_schedule(id_, (int)(time.strftime('%w'))+1)
-            
-            time.sleep(TimeOperator.get_remaining_time(True if TimeOperator.time_gateway() else False))
-        else:
-          time.sleep(30)
+      time.sleep(30)
 
   except Exception as e:
     bot.send_message(id_, e)
     bot.send_message(id_, e.args)
     print(e)
     print(e.args)
-    time.sleep(30)  
