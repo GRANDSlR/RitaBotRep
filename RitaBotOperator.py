@@ -1,8 +1,8 @@
-import telebot, requests, time, threading
-from telebot import types
+import telebot, time, threading
 from SheduleOperator import *
 from FileOperator import *
-
+from KeyboardOperator import *
+import traceback
 
 # token = '5760104271:AAGeQlglQvkTiAHEUlCpTrn2NuAl-sAA2X0' # realt bot
 token='6125433165:AAGf3tSiymltFchIuuH0T6F2FdvVV-czzAI' # rita
@@ -10,6 +10,7 @@ token='6125433165:AAGf3tSiymltFchIuuH0T6F2FdvVV-czzAI' # rita
 bot = telebot.TeleBot(token)
 # @a7sd98Bot
 
+id_=1819018345
 
 # url_KBP='https://kbp.by/rasp/timetable/view_beta_kbp/?page=stable&cat=group&id=53'
 
@@ -18,29 +19,10 @@ bot = telebot.TeleBot(token)
 #   "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36"
 # }
 
-
-id_=1819018345
-
-
 # sub_disc_list = []
 
 # responce = requests.get(url_KBP, headers=headers)
 # soup=BS(responce.text, "lxml")
-
-
-markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
-item1=types.KeyboardButton("Старт")
-item2=types.KeyboardButton("Заметки")
-item3=types.KeyboardButton("Расписание на сегодня")
-item4=types.KeyboardButton("Расписание на завтра")
-markup.add(item1, item2).add(item3, item4)
-
-inline_markup_menu = types.InlineKeyboardMarkup(row_width=2)
-menu1=types.InlineKeyboardButton("Написать заметку", callback_data="Написать заметку")
-menu2=types.InlineKeyboardButton("Прочитать заметку", callback_data="Прочитать заметку")
-menu3=types.InlineKeyboardButton("Добавить заметку", callback_data="Добавить заметку")
-menu4=types.InlineKeyboardButton("Удалить заметку", callback_data="Удалить заметку")
-inline_markup_menu.add(menu1, menu2, menu3, menu4)
 
 
 # def up_state(id_, day, f):
@@ -134,63 +116,80 @@ inline_markup_menu.add(menu1, menu2, menu3, menu4)
 #     return subject[day].find("div", class_=f"pair lw_{day} added").find("div", class_="subject").find("a").text
 
 
+
+# markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
+# item1=types.KeyboardButton("Старт")
+# item2=types.KeyboardButton("Заметки")
+# item3=types.KeyboardButton("Расписание на сегодня")
+# item4=types.KeyboardButton("Расписание на завтра")
+# markup.add(item1, item2).add(item3, item4)
+
+# inline_markup_menu = types.InlineKeyboardMarkup(row_width=2)
+# menu1=types.InlineKeyboardButton("Написать заметку", callback_data="Написать заметку")
+# menu2=types.InlineKeyboardButton("Прочитать заметку", callback_data="Прочитать заметку")
+# menu3=types.InlineKeyboardButton("Добавить заметку", callback_data="Добавить заметку")
+# menu4=types.InlineKeyboardButton("Удалить заметку", callback_data="Удалить заметку")
+# inline_markup_menu.add(menu1, menu2, menu3, menu4)
+
+
+SheduleOperatorObject = SheduleOperator(id_, bot, (int)(time.strftime('%w')))
+
+KeyboardOperatorObject = KeyboardOperator("BotFiles/")
+
+FileOperatorObject = FileOperator(id_, bot, "BotFiles/")
+
+
+
 @bot.message_handler(content_types=['text'])
 def get_text(message):
   if(message.text=="Заметки"):
 
-    bot.send_message(id_, 'Выберите действие с заметками:', reply_markup=inline_markup_menu)
+    bot.send_message(id_, 'Выберите действие с заметками:', reply_markup=KeyboardOperatorObject.inline_markup_menu)
 
   if(message.text=="Старт"):
 
-    bot.send_message(id_, 'Привет!', reply_markup=markup)
+    bot.send_message(id_, 'Привет!', reply_markup=KeyboardOperatorObject.markup)
 
   if(message.text=="Расписание на сегодня"):
 
-    responce = requests.get(url_KBP, headers=headers)
-    soup=BS(responce.text, "lxml")
-    # week=time.strftime("%A")
-    SheduleOperator.up_state(id_, (int)(time.strftime('%w')), 0)
-    SheduleOperator.print_schedule(id_, (int)(time.strftime('%w')))
+    SheduleOperatorObject.schedule_handler(0)
 
   if(message.text=="Расписание на завтра"):
     
-    responce = requests.get(url_KBP, headers=headers)
-    soup=BS(responce.text, "lxml")
-    # week=time.strftime("%A")
-    up_state(id_, (int)(time.strftime('%w'))+1, 1)
-    print_schedule(id_, (int)(time.strftime('%w'))+1)
+    SheduleOperatorObject.schedule_handler(1)
+
 
 @bot.callback_query_handler(func=lambda call: True)# ответ на меню заметок
 def check_callback_data(call):
   if (call.data=="Написать заметку"):
-    write_menu_flag('1')
-    bot.send_message(id_, "Выберите облаcть:", reply_markup=inlineKeyboard_init())
+    FileOperatorObject.write_menu_flag('1')
+    bot.send_message(id_, "Выберите облаcть:", reply_markup=KeyboardOperatorObject.inlineKeyboard_init())
   
   elif (call.data=="Прочитать заметку"):
-    write_menu_flag('2')
-    bot.send_message(id_, "Выберите облаcть:", reply_markup=inlineKeyboard_init())
+    FileOperatorObject.write_menu_flag('2')
+    bot.send_message(id_, "Выберите облаcть:", reply_markup=KeyboardOperatorObject.inlineKeyboard_init())
 
   elif(call.data=="Добавить заметку"):
     bot.send_message(id_, "Назовите новую облаcть заметок:")
-    bot.register_next_step_handler(call.message, new_notes)
+    bot.register_next_step_handler(call.message, FileOperatorObject.new_notes())
   
   elif(call.data=="Удалить заметку"):
-    write_menu_flag('3')
-    bot.send_message(id_, "Выберите облаcть:", reply_markup=inlineKeyboard_init())
+    FileOperatorObject.write_menu_flag('3')
+    bot.send_message(id_, "Выберите облаcть:", reply_markup=KeyboardOperatorObject.inlineKeyboard_init())
 
   else:
-    if(read_menu_flag()=='1'):
+    if(FileOperatorObject.read_menu_flag()=='1'):
       bot.send_message(id_, "Содержимое заметки:\n")
-      bot.send_message(id_, read_sub_inf(call.data))
+      bot.send_message(id_, FileOperatorObject.read_sub_inf(call.data))
       bot.send_message(id_, f"Напишите заметку на {call.data}:")
-      bot.register_next_step_handler(call.message, lambda msg: new_message(msg, call.data))
+      bot.register_next_step_handler(call.message, lambda msg: FileOperatorObject.new_message(msg, call.data))
     
-    elif(read_menu_flag()=='2'):
-      bot.send_message(id_, read_sub_inf(call.data))
+    elif(FileOperatorObject.read_menu_flag()=='2'):
+      bot.send_message(id_, FileOperatorObject.read_sub_inf(call.data))
     
-    elif(read_menu_flag()=='3'):
+    elif(FileOperatorObject.read_menu_flag()=='3'):
       bot.send_message(id_, f"Вы уверены, что хотите удалить {call.data}?")
-      bot.register_next_step_handler(call.message, lambda msg: delete_sub(msg, call.data))
+      bot.register_next_step_handler(call.message, lambda msg: FileOperatorObject.delete_sub(msg, call.data))
 
 
 # def delete_sub(message, name):
@@ -245,47 +244,46 @@ def check_callback_data(call):
 #     return "null"
 
 
-def inlineKeyboard_init():
-  txt_files = [f for f in os.listdir(path) if f.endswith('.txt')]
-  files=[]
-  for file in txt_files:
-    files.append(file.split(".")[0])
-  inline_markup = types.InlineKeyboardMarkup(row_width=2)
-  for line in range(1, len(files), 2):
-    if(files[line]=="FlagCarrier"):
-      line+=1
-    menu1=types.InlineKeyboardButton(f"{files[line]}", callback_data=f"{files[line]}")
-    if(line+1!=len(files)):
-      menu2=types.InlineKeyboardButton(f"{files[line+1]}", callback_data=f"{files[line+1]}")
-      inline_markup.add(menu1, menu2)
-    else:
-      inline_markup.add(menu1)
+# def inlineKeyboard_init():
+#   txt_files = [f for f in os.listdir(path) if f.endswith('.txt')]
+#   files=[]
+#   for file in txt_files:
+#     files.append(file.split(".")[0])
+#   inline_markup = types.InlineKeyboardMarkup(row_width=2)
+#   for line in range(1, len(files), 2):
+#     if(files[line]=="FlagCarrier"):
+#       line+=1
+#     menu1=types.InlineKeyboardButton(f"{files[line]}", callback_data=f"{files[line]}")
+#     if(line+1!=len(files)):
+#       menu2=types.InlineKeyboardButton(f"{files[line+1]}", callback_data=f"{files[line+1]}")
+#       inline_markup.add(menu1, menu2)
+#     else:
+#       inline_markup.add(menu1)
 
-  return inline_markup
+#   return inline_markup
 
+# def schedule_checker():
 
-def schedule_checker():
+#   if(up_state_check((int)(time.strftime('%w'))+1)=="true"):
 
-  if(up_state_check((int)(time.strftime('%w'))+1)=="true"):
+#     up_state(id_, (int)(time.strftime('%w'))+1, 1)
+#     print_schedule(id_, (int)(time.strftime('%w'))+1)
 
-    up_state(id_, (int)(time.strftime('%w'))+1, 1)
-    print_schedule(id_, (int)(time.strftime('%w'))+1)
+#     if (TimeOperator.sleep_until_evening() == False):
+#       return
 
-    if (TimeOperator.sleep_until_evening() == False):
-      return
+#     while True:
 
-    while True:
+#       if (TimeOperator.time_gateway()):
 
-      if (TimeOperator.time_gateway()):
+#         up_state(id_, (int)(time.strftime('%w'))+1, 1)
+#         print_schedule(id_, (int)(time.strftime('%w'))+1)
 
-        up_state(id_, (int)(time.strftime('%w'))+1, 1)
-        print_schedule(id_, (int)(time.strftime('%w'))+1)
+#         TimeOperator.sleep_until_next_day()
 
-        TimeOperator.sleep_until_next_day()
+#         break
 
-        break
-
-      time.sleep(30) 
+#       time.sleep(30) 
 
 
 if __name__ == "__main__":
@@ -294,18 +292,14 @@ if __name__ == "__main__":
 
   try:
 
-    SheduleOperatorObject = SheduleOperator()
-
     print(f'Мониторинг за чатом {id_} работает')
 
     while True:
 
-      schedule_checker()
+      SheduleOperatorObject.schedule_checker()
 
       time.sleep(30)
 
   except Exception as e:
-    bot.send_message(id_, e)
-    bot.send_message(id_, e.args)
-    print(e)
-    print(e.args)
+    bot.send_message(id_, traceback.print_exc())
+    print(traceback.print_exc())

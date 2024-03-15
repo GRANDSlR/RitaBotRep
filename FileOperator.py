@@ -2,13 +2,15 @@ import os
 
 class FileOperator:
 
-    def __init__(self, userId, bot):
+    def __init__(self, userId, bot, noteDirPath):
         
         self.userId=userId
 
         self.bot=bot
 
-        self.path = "BotFiles/"
+        self.path = noteDirPath
+        
+        # "BotFiles/"
 
     def delete_sub(self, message, name):
         if(message.text=="Да"):
