@@ -1,36 +1,31 @@
-import telebot, requests, time, threading, asyncio
-from datetime import date, timedelta
+import telebot, requests, time, threading
 from telebot import types
-from bs4 import BeautifulSoup as BS
-import os
-from TimeOperator import *
-
+from SheduleOperator import *
+from FileOperator import *
 
 
 # token = '5760104271:AAGeQlglQvkTiAHEUlCpTrn2NuAl-sAA2X0' # realt bot
-# token='6125433165:AAGf3tSiymltFchIuuH0T6F2FdvVV-czzAI' # rita
-token='6990977891:AAGFhYZT3dEV4ej1lvD0AKBnuwbWod2UBCA' # test bot
+token='6125433165:AAGf3tSiymltFchIuuH0T6F2FdvVV-czzAI' # rita
+# token='6990977891:AAGFhYZT3dEV4ej1lvD0AKBnuwbWod2UBCA' # test bot
 bot = telebot.TeleBot(token)
 # @a7sd98Bot
 
 
-url_KBP='https://kbp.by/rasp/timetable/view_beta_kbp/?page=stable&cat=group&id=53'
+# url_KBP='https://kbp.by/rasp/timetable/view_beta_kbp/?page=stable&cat=group&id=53'
 
-headers = {
-  "User-Agent":
-  "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36"
-}
+# headers = {
+#   "User-Agent":
+#   "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36"
+# }
+
 
 id_=1819018345
 
-path = "BotFiles/"
 
-# path = "BotFiles\\"
+# sub_disc_list = []
 
-sub_disc_list = []
-
-responce = requests.get(url_KBP, headers=headers)
-soup=BS(responce.text, "lxml")
+# responce = requests.get(url_KBP, headers=headers)
+# soup=BS(responce.text, "lxml")
 
 
 markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
@@ -48,95 +43,95 @@ menu4=types.InlineKeyboardButton("Удалить заметку", callback_data=
 inline_markup_menu.add(menu1, menu2, menu3, menu4)
 
 
-def up_state(id_, day, f):
-  tomorrow = (date.today() + timedelta(days=f)).strftime("%d-%m")
+# def up_state(id_, day, f):
+#   tomorrow = (date.today() + timedelta(days=f)).strftime("%d-%m")
 
-  zameny=soup.find("tr", class_="zamena").find_all("th")
+#   zameny=soup.find("tr", class_="zamena").find_all("th")
   
-  bot.send_message(id_, f"Раписание на {tomorrow}")
-  if ("Замен нет" in zameny[day].get_text()):
-    bot.send_message(id_, "Замен нет")
-  elif (zameny[day].find("label")!=None):
-    bot.send_message(id_, "Замены есть")  
-  else:
-    bot.send_message(id_,"Расписание не обновлено")
+#   bot.send_message(id_, f"Раписание на {tomorrow}")
+#   if ("Замен нет" in zameny[day].get_text()):
+#     bot.send_message(id_, "Замен нет")
+#   elif (zameny[day].find("label")!=None):
+#     bot.send_message(id_, "Замены есть")  
+#   else:
+#     bot.send_message(id_,"Расписание не обновлено")
 
-def up_state_check(day):
+# def up_state_check(day):
 
-  responce = requests.get(url_KBP, headers=headers)
-  soup=BS(responce.text, "lxml")
+#   responce = requests.get(url_KBP, headers=headers)
+#   soup=BS(responce.text, "lxml")
 
-  zameny=soup.find("tr", class_="zamena").find_all("th")
+#   zameny=soup.find("tr", class_="zamena").find_all("th")
 
-  if ("Замен нет" in zameny[day].get_text()):
-    return "true"
-  elif (zameny[day].find("label")!=None):
-    return "true"
-  else:
-    return "false"
+#   if ("Замен нет" in zameny[day].get_text()):
+#     return "true"
+#   elif (zameny[day].find("label")!=None):
+#     return "true"
+#   else:
+#     return "false"
 
 
-def print_schedule(id_, day):
+# def print_schedule(id_, day):
 
-  if(len(get_schedule(day))!=0):
+#   if(len(get_schedule(day))!=0):
     
-    bot.send_message(id_, "\n".join(get_schedule(day)))
+#     bot.send_message(id_, "\n".join(get_schedule(day)))
 
-  if(len(find_notes(day))!=0):
+#   if(len(find_notes(day))!=0):
 
-    bot.send_message(id_, "Заметки:\n"+"".join(find_notes(day)))
+#     bot.send_message(id_, "Заметки:\n"+"".join(find_notes(day)))
 
-def get_schedule(day):
+# def get_schedule(day):
 
-  schedule_list = []
-  lesson=soup.find_all("tr")
+#   schedule_list = []
+#   lesson=soup.find_all("tr")
 
-  for i in range(2, 17):
+#   for i in range(2, 17):
 
-    subject=lesson[i].find_all("td")
+#     subject=lesson[i].find_all("td")
 
-    if (subject[day].find("div", class_="empty-pair")==None or subject[day].find("div", class_=f"pair lw_{day} added")!=None):
-      num=subject[0].text
-      if(subject[day].find("div", class_=f"pair lw_{day} added")==None):
-        sub=subject[day].find("div", class_="subject").find("a").text
-        cab=subject[day].find("div", class_="place").find("a").text
-        schedule_list.append(f'{num}-{sub} [{cab}]')
+#     if (subject[day].find("div", class_="empty-pair")==None or subject[day].find("div", class_=f"pair lw_{day} added")!=None):
+#       num=subject[0].text
+#       if(subject[day].find("div", class_=f"pair lw_{day} added")==None):
+#         sub=subject[day].find("div", class_="subject").find("a").text
+#         cab=subject[day].find("div", class_="place").find("a").text
+#         schedule_list.append(f'{num}-{sub} [{cab}]')
 
-      else:
-        sub=subject[day].find("div", class_=f"pair lw_{day} added").find("div", class_="subject").find("a").text
-        cab=subject[day].find("div", class_=f"pair lw_{day} added").find("div", class_="place").find("a").text
-        schedule_list.append(f'{num}-{sub} [{cab}] *') 
+#       else:
+#         sub=subject[day].find("div", class_=f"pair lw_{day} added").find("div", class_="subject").find("a").text
+#         cab=subject[day].find("div", class_=f"pair lw_{day} added").find("div", class_="place").find("a").text
+#         schedule_list.append(f'{num}-{sub} [{cab}] *') 
         
-  return schedule_list
+#   return schedule_list
 
-def find_notes(day):
+# def find_notes(day):
 
-  write_sub_list = []
-  lesson=soup.find_all("tr")
+#   write_sub_list = []
+#   lesson=soup.find_all("tr")
 
-  for i in range(2, 17):
+#   for i in range(2, 17):
 
-    subject=lesson[i].find_all("td")
+#     subject=lesson[i].find_all("td")
 
-    if (subject[day].find("div", class_="empty-pair")==None or subject[day].find("div", class_=f"pair lw_{day} added")!=None):
+#     if (subject[day].find("div", class_="empty-pair")==None or subject[day].find("div", class_=f"pair lw_{day} added")!=None):
 
-      sub=get_sub_at_day(subject, day)
+#       sub=get_sub_at_day(subject, day)
 
-      if(read_sub_inf(sub)!="null"):
-        write_sub_list.append(sub +":\n"+ read_sub_inf(sub)+"\n")  
+#       if(read_sub_inf(sub)!="null"):
+#         write_sub_list.append(sub +":\n"+ read_sub_inf(sub)+"\n")  
 
-  write_sub_list = list(set(write_sub_list))
+#   write_sub_list = list(set(write_sub_list))
   
-  return write_sub_list
+#   return write_sub_list
 
-def get_sub_at_day(subject, day):
+# def get_sub_at_day(subject, day):
 
-  if(subject[day].find("div", class_=f"pair lw_{day} added")==None):
+#   if(subject[day].find("div", class_=f"pair lw_{day} added")==None):
 
-    return subject[day].find("div", class_="subject").find("a").text
+#     return subject[day].find("div", class_="subject").find("a").text
   
-  else:
-    return subject[day].find("div", class_=f"pair lw_{day} added").find("div", class_="subject").find("a").text
+#   else:
+#     return subject[day].find("div", class_=f"pair lw_{day} added").find("div", class_="subject").find("a").text
 
 
 @bot.message_handler(content_types=['text'])
@@ -153,15 +148,15 @@ def get_text(message):
 
     responce = requests.get(url_KBP, headers=headers)
     soup=BS(responce.text, "lxml")
-    week=time.strftime("%A")
-    up_state(id_, (int)(time.strftime('%w')), 0)
-    print_schedule(id_, (int)(time.strftime('%w')))
+    # week=time.strftime("%A")
+    SheduleOperator.up_state(id_, (int)(time.strftime('%w')), 0)
+    SheduleOperator.print_schedule(id_, (int)(time.strftime('%w')))
 
   if(message.text=="Расписание на завтра"):
     
     responce = requests.get(url_KBP, headers=headers)
     soup=BS(responce.text, "lxml")
-    week=time.strftime("%A")
+    # week=time.strftime("%A")
     up_state(id_, (int)(time.strftime('%w'))+1, 1)
     print_schedule(id_, (int)(time.strftime('%w'))+1)
 
@@ -198,56 +193,57 @@ def check_callback_data(call):
       bot.register_next_step_handler(call.message, lambda msg: delete_sub(msg, call.data))
 
 
-def delete_sub(message, name):
-  if(message.text=="Да"):
-    os.remove(f"{path}{name}.txt")  
-    bot.send_message(id_, "Заметка успешно удалена!")
-  else:
-    bot.send_message(id_, "Вот и славно!")
+# def delete_sub(message, name):
+#   if(message.text=="Да"):
+#     os.remove(f"{path}{name}.txt")  
+#     bot.send_message(id_, "Заметка успешно удалена!")
+#   else:
+#     bot.send_message(id_, "Вот и славно!")
     
-def new_file(name):
+# def new_file(name):
 
-  with open(f"{path}{name}.txt", "w", encoding="utf-8") as file:
-      file.write("null")
+#   with open(f"{path}{name}.txt", "w", encoding="utf-8") as file:
+#       file.write("null")
 
-def new_notes(message):
+# def new_notes(message):
 
-  if(message.text=="..."):
+#   if(message.text=="..."):
 
-    bot.send_message(id_, "Хозяин-барин")
-  else:
-    new_file(message.text)
+#     bot.send_message(id_, "Хозяин-барин")
+#   else:
+#     new_file(message.text)
 
-    bot.send_message(id_, f"Облаcть {message.text} успешно зарегистрирована!")  
+#     bot.send_message(id_, f"Облаcть {message.text} успешно зарегистрирована!")  
 
-def new_message(message, name):
-  if(message.text=="..."):
-    bot.send_message(id_, "Хозяин-барин")
-  else:
-    with open(f"{path}{name}.txt", "w", encoding="utf-8") as file:
-      file.writelines(message.text.replace('\n', '/$/'))
-      bot.send_message(id_, "Заметка успешно записана!")  
+# def new_message(message, name):
+#   if(message.text=="..."):
+#     bot.send_message(id_, "Хозяин-барин")
+#   else:
+#     with open(f"{path}{name}.txt", "w", encoding="utf-8") as file:
+#       file.writelines(message.text.replace('\n', '/$/'))
+#       bot.send_message(id_, "Заметка успешно записана!")  
 
-def write_menu_flag(data):
-  with open(f"{path}FlagCarrier.txt", "w", encoding="utf-8") as file:
-    file.write(data)
+# def write_menu_flag(data):
+#   with open(f"{path}FlagCarrier.txt", "w", encoding="utf-8") as file:
+#     file.write(data)
 
-def read_menu_flag():
-  with open(f"{path}FlagCarrier.txt", "r", encoding="utf-8") as file:
-    return file.read()
+# def read_menu_flag():
+#   with open(f"{path}FlagCarrier.txt", "r", encoding="utf-8") as file:
+#     return file.read()
 
-def read_sub_inf(name):
-  try:
-    with open(f"{path}{name}.txt", "r", encoding="utf-8") as file:
-      lines = file.read()
-      return lines.replace("/$/", "\n")
+# def read_sub_inf(name):
+#   try:
+#     with open(f"{path}{name}.txt", "r", encoding="utf-8") as file:
+#       lines = file.read()
+#       return lines.replace("/$/", "\n")
     
-  except FileNotFoundError:
-    new_file(name)
+#   except FileNotFoundError:
+#     new_file(name)
 
-    print(f"Создан новый файл: {name}.txt")
+#     print(f"Создан новый файл: {name}.txt")
 
-    return "null"
+#     return "null"
+
 
 def inlineKeyboard_init():
   txt_files = [f for f in os.listdir(path) if f.endswith('.txt')]
@@ -297,7 +293,9 @@ if __name__ == "__main__":
   threading.Thread(target=bot.infinity_polling, name='bot_infinity_polling', daemon=True).start()
 
   try:
-    
+
+    SheduleOperatorObject = SheduleOperator()
+
     print(f'Мониторинг за чатом {id_} работает')
 
     while True:
