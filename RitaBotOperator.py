@@ -12,9 +12,11 @@ bot = telebot.TeleBot(token)
 
 id_=1819018345
 
-KeyboardOperatorObject = KeyboardOperator("BotFiles/")
+noteDirPath="BotFiles/"
 
-FileOperatorObject = FileOperator(id_, bot, "BotFiles/")
+KeyboardOperatorObject = KeyboardOperator(noteDirPath)
+
+FileOperatorObject = FileOperator(id_, bot, noteDirPath)
 
 SheduleOperatorObject = SheduleOperator(id_, bot, (int)(time.strftime('%w')), FileOperatorObject)
 
