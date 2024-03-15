@@ -121,7 +121,7 @@ class SheduleOperator:
             if (subject[self.day + self.sheduleDayFlag].find("div", class_="empty-pair")==None or subject[self.day + self.sheduleDayFlag].find("div", class_=f"pair lw_{self.day + self.sheduleDayFlag} added")!=None):
                 sub = self.get_sub_at_day(subject)
                 if(self.FileOperatorObject.read_sub_inf(sub)!="null"):
-                    write_sub_list.append(sub +":\n"+ self.read_sub_inf(sub)+"\n")  
+                    write_sub_list.append(sub +":\n"+ self.FileOperatorObject.read_sub_inf(sub)+"\n")  
         write_sub_list = list(set(write_sub_list))
         return write_sub_list
 
