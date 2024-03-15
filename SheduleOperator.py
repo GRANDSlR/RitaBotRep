@@ -6,7 +6,8 @@ import requests
 
 class SheduleOperator:
 
-    def __init__(self, userId, bot, day):
+    def __init__(self, userId, bot, day, FileOperatorObject):
+
         self.url_KBP='https://kbp.by/rasp/timetable/view_beta_kbp/?page=stable&cat=group&id=53'
 
         self.headers = {
@@ -22,13 +23,10 @@ class SheduleOperator:
 
         self.sheduleDayFlag = 0
 
-        self.FileOperatorObject=FileOperator(userId, bot, "BotFiles/")
+        self.FileOperatorObject=FileOperatorObject
 
 
     def schedule_checker(self):
-        
-        responce = requests.get(self.url_KBP, headers=self.headers)
-        soup=BS(responce.text, "lxml")
 
         if(self.up_state_check()=="true"):
 
@@ -96,6 +94,8 @@ class SheduleOperator:
 
     def get_schedule(self, soup):
 
+        self.bot.send_message(self.userId, f"sheduleDayFlag: {self.sheduleDayFlag}")
+
         schedule_list = []
         lesson = soup.find_all("tr")
         for i in range(2, 17):
@@ -129,152 +129,3 @@ class SheduleOperator:
             return subject[self.day + self.sheduleDayFlag].find("div", class_="subject").find("a").text
         else:
             return subject[self.day + self.sheduleDayFlag].find("div", class_=f"pair lw_{self.day + self.sheduleDayFlag} added").find("div", class_="subject").find("a").text
-
-
-
-
-
-
-
-
-
-
-
-
-# from TimeOperator import *
-# from datetime import date, timedelta
-# from bs4 import BeautifulSoup as BS
-# import requests
-
-# # from RitaBotOperator import *
-
-# class SheduleOperator:
-
-#     url_KBP='https://kbp.by/rasp/timetable/view_beta_kbp/?page=stable&cat=group&id=53'
-
-#     headers = {
-#     "User-Agent":
-#     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36"
-#     }
-
-#     responce = requests.get(url_KBP, headers=headers)
-#     soup=BS(responce.text, "lxml")
-
-
-#     def schedule_checker():
-
-#         if(SheduleOperator.up_state_check((int)(time.strftime('%w'))+1)=="true"):
-
-#             SheduleOperator.up_state(id_, (int)(time.strftime('%w'))+1, 1)
-#             SheduleOperator.print_schedule(id_, (int)(time.strftime('%w'))+1)
-
-#             if (TimeOperator.sleep_until_evening() == False):
-#                 return
-
-#             while True:
-
-#                 if (TimeOperator.time_gateway()):
-
-#                     SheduleOperator.up_state(id_, (int)(time.strftime('%w'))+1, 1)
-#                     SheduleOperator.print_schedule(id_, (int)(time.strftime('%w'))+1)
-
-#                     TimeOperator.sleep_until_next_day()
-
-#                     break
-
-#             time.sleep(30) 
-
-
-#     def up_state(id_, day, f):
-#         tomorrow = (date.today() + timedelta(days=f)).strftime("%d-%m")
-
-#         zameny=soup.find("tr", class_="zamena").find_all("th")
-        
-#         bot.send_message(id_, f"Раписание на {tomorrow}")
-#         if ("Замен нет" in zameny[day].get_text()):
-#             bot.send_message(id_, "Замен нет")
-#         elif (zameny[day].find("label")!=None):
-#             bot.send_message(id_, "Замены есть")  
-#         else:
-#             bot.send_message(id_,"Расписание не обновлено")
-
-
-#     def up_state_check(day):
-
-#         responce = requests.get(url_KBP, headers=headers)
-#         soup=BS(responce.text, "lxml")
-
-#         zameny=soup.find("tr", class_="zamena").find_all("th")
-
-#         if ("Замен нет" in zameny[day].get_text()):
-#             return "true"
-#         elif (zameny[day].find("label")!=None):
-#             return "true"
-#         else:
-#             return "false"
-
-
-#     def print_schedule(id_, day):
-
-#         if(len(SheduleOperator.get_schedule(day))!=0):
-            
-#             bot.send_message(id_, "\n".join(SheduleOperator.get_schedule(day)))
-
-#         if(len(SheduleOperator.find_notes(day))!=0):
-
-#             bot.send_message(id_, "Заметки:\n"+"".join(SheduleOperator.find_notes(day)))
-
-
-#     def get_schedule(day):
-
-#         schedule_list = []
-#         lesson=soup.find_all("tr")
-
-#         for i in range(2, 17):
-
-#             subject=lesson[i].find_all("td")
-
-#             if (subject[day].find("div", class_="empty-pair")==None or subject[day].find("div", class_=f"pair lw_{day} added")!=None):
-#                 num=subject[0].text
-#                 if(subject[day].find("div", class_=f"pair lw_{day} added")==None):
-#                     sub=subject[day].find("div", class_="subject").find("a").text
-#                     cab=subject[day].find("div", class_="place").find("a").text
-#                     schedule_list.append(f'{num}-{sub} [{cab}]')
-
-#                 else:
-#                     sub=subject[day].find("div", class_=f"pair lw_{day} added").find("div", class_="subject").find("a").text
-#                     cab=subject[day].find("div", class_=f"pair lw_{day} added").find("div", class_="place").find("a").text
-#                     schedule_list.append(f'{num}-{sub} [{cab}] *') 
-                    
-#         return schedule_list
-
-
-#     def find_notes(day):
-
-#         write_sub_list = []
-#         lesson=soup.find_all("tr")
-
-#         for i in range(2, 17):
-
-#             subject=lesson[i].find_all("td")
-
-#             if (subject[day].find("div", class_="empty-pair")==None or subject[day].find("div", class_=f"pair lw_{day} added")!=None):
-
-#                 sub=SheduleOperator.get_sub_at_day(subject, day)
-
-#                 if(SheduleOperator.read_sub_inf(sub)!="null"):
-#                     write_sub_list.append(sub +":\n"+ SheduleOperator.read_sub_inf(sub)+"\n")  
-
-#         write_sub_list = list(set(write_sub_list))
-        
-#         return write_sub_list
-
-
-#     def get_sub_at_day(subject, day):
-
-#         if(subject[day].find("div", class_=f"pair lw_{day} added")==None):
-
-#             return subject[day].find("div", class_="subject").find("a").text
-        
-#         else:
-#             return subject[day].find("div", class_=f"pair lw_{day} added").find("div", class_="subject").find("a").text
