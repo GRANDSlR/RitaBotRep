@@ -2,7 +2,7 @@ from TimeOperator import *
 from FileOperator import *
 from datetime import date, timedelta
 from bs4 import BeautifulSoup as BS
-import requests
+import requests, traceback
 
 class SheduleOperator:
 
@@ -46,6 +46,7 @@ class SheduleOperator:
                     break
 
             time.sleep(30) 
+        
 
     def schedule_handler(self, sheduleDayFlag):
 
@@ -82,13 +83,17 @@ class SheduleOperator:
         responce = requests.get(self.url_KBP, headers=self.headers)
         soup=BS(responce.text, "lxml")
     
-        zameny = soup.find("tr", class_="zamena").find_all("th")
-        if ("Замен нет" in zameny[self.day+1].get_text()):
-            return "true"
-        elif (zameny[self.day+1].find("label")!=None):
-            return "true"
-        else:
-            return "false"
+        try:
+            zameny = soup.find("tr", class_="zamena").find_all("th")
+            if ("Замен нет" in zameny[self.day+1].get_text()):
+                return "true"
+            elif (zameny[self.day+1].find("label")!=None):
+                return "true"
+            else:
+                return "false"
+        except Exception as e:
+            self.bot.send_message(self.userId, traceback.print_exc())
+            print(traceback.print_exc())
 
     def print_schedule(self):
 
