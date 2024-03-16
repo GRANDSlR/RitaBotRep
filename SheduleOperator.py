@@ -83,17 +83,14 @@ class SheduleOperator:
         responce = requests.get(self.url_KBP, headers=self.headers)
         soup=BS(responce.text, "lxml")
     
-        try:
-            zameny = soup.find("tr", class_="zamena").find_all("th")
-            if ("Замен нет" in zameny[self.day+1].get_text()):
-                return "true"
-            elif (zameny[self.day+1].find("label")!=None):
-                return "true"
-            else:
-                return "false"
-        except Exception as e:
-            self.bot.send_message(self.userId, traceback.print_exc())
-            print(traceback.print_exc())
+        zameny = soup.find(class_="zamena").find_all("th")
+
+        if ("Замен нет" in zameny[self.day+1].get_text()):
+            return "true"
+        elif (zameny[self.day+1].find("label")!=None):
+            return "true"
+        else:
+            return "false"
 
     def print_schedule(self):
 
