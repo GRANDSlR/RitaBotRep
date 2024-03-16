@@ -6,7 +6,7 @@ import requests
 
 class SheduleOperator:
 
-    def __init__(self, userId, bot, day, FileOperatorObject):
+    def __init__(self, userId, bot, FileOperatorObject):
 
         self.url_KBP='https://kbp.by/rasp/timetable/view_beta_kbp/?page=stable&cat=group&id=53'
 
@@ -19,7 +19,7 @@ class SheduleOperator:
 
         self.bot=bot
 
-        self.day=day
+        self.day=None
 
         self.sheduleDayFlag = 0
 
@@ -27,6 +27,8 @@ class SheduleOperator:
 
 
     def schedule_checker(self):
+
+        self.day=(int)(time.strftime('%w'))
 
         if(self.up_state_check()=="true"):
 
@@ -47,7 +49,13 @@ class SheduleOperator:
 
     def schedule_handler(self, sheduleDayFlag):
 
+        self.day=(int)(time.strftime('%w'))
+
         self.sheduleDayFlag=sheduleDayFlag
+
+        if (self.day + self.sheduleDayFlag == 7):
+            self.bot.send_message(self.userId, "Завтра воскресенье, отдыхаем")
+            return
 
         self.up_state()
         self.print_schedule()
@@ -104,12 +112,10 @@ class SheduleOperator:
                     sub = subject[self.day + self.sheduleDayFlag].find("div", class_="subject").find("a").text
                     cab = subject[self.day + self.sheduleDayFlag].find("div", class_="place").find("a").text
                     schedule_list.append(f'{num}-{sub} [{cab}]')
-                    print(f"nothing updates at {sub}")
                 else:
                     sub = subject[self.day + self.sheduleDayFlag].find("div", class_=f"pair lw_{self.day + self.sheduleDayFlag} added").find("div", class_="subject").find("a").text
                     cab = subject[self.day + self.sheduleDayFlag].find("div", class_=f"pair lw_{self.day + self.sheduleDayFlag} added").find("div", class_="place").find("a").text
                     schedule_list.append(f'{num}-{sub} [{cab}] *') 
-                    print(f"update at {sub}")
 
         return schedule_list
 

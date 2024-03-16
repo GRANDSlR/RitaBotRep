@@ -5,8 +5,8 @@ from KeyboardOperator import *
 import traceback
 
 # token = '5760104271:AAGeQlglQvkTiAHEUlCpTrn2NuAl-sAA2X0' # realt bot
-token='6125433165:AAGf3tSiymltFchIuuH0T6F2FdvVV-czzAI' # rita
-# token='6990977891:AAGFhYZT3dEV4ej1lvD0AKBnuwbWod2UBCA' # test bot
+# token='6125433165:AAGf3tSiymltFchIuuH0T6F2FdvVV-czzAI' # rita
+token='6990977891:AAGFhYZT3dEV4ej1lvD0AKBnuwbWod2UBCA' # test bot
 bot = telebot.TeleBot(token)
 # @a7sd98Bot
 
@@ -18,7 +18,7 @@ KeyboardOperatorObject = KeyboardOperator(noteDirPath)
 
 FileOperatorObject = FileOperator(id_, bot, noteDirPath)
 
-SheduleOperatorObject = SheduleOperator(id_, bot, (int)(time.strftime('%w')), FileOperatorObject)
+SheduleOperatorObject = SheduleOperator(id_, bot, FileOperatorObject)
 
 
 @bot.message_handler(content_types=['text'])
