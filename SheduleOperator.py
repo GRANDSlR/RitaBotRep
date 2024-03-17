@@ -2,7 +2,7 @@ from TimeOperator import *
 from FileOperator import *
 from datetime import date, timedelta
 from bs4 import BeautifulSoup as BS
-import requests, traceback
+import requests
 
 class SheduleOperator:
 
@@ -30,7 +30,7 @@ class SheduleOperator:
 
         self.day=(int)(time.strftime('%w'))
 
-        if(self.up_state_check()=="true"):
+        if(self.up_state_check()=="true" and TimeOperator.time_gateway([10, 0])):
 
             self.schedule_handler(1)
 
@@ -38,14 +38,14 @@ class SheduleOperator:
                 return
 
             while True:
-                if (TimeOperator.time_gateway()):
+                if (TimeOperator.time_gateway(TimeOperator.secondMessageTime)):
 
                     self.schedule_handler(1)
 
                     TimeOperator.sleep_until_next_day()
                     break
 
-            time.sleep(30) 
+                time.sleep(30) 
         
 
     def schedule_handler(self, sheduleDayFlag):
@@ -54,8 +54,8 @@ class SheduleOperator:
 
         self.sheduleDayFlag=sheduleDayFlag
 
-        if (self.day + self.sheduleDayFlag == 7):
-            self.bot.send_message(self.userId, "Завтра воскресенье, отдыхаем")
+        if (self.day + self.sheduleDayFlag == 7 or (self.day == 0 and self.sheduleDayFlag == 0)):
+            self.bot.send_message(self.userId, "Воскресенье, отдыхаем")
             return
 
         self.up_state()

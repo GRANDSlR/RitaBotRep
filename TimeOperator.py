@@ -3,7 +3,7 @@ import time, datetime
 
 class TimeOperator:
 
-    secondMessageTime=[22, 38]
+    secondMessageTime=[19, 30]
 
     @staticmethod
     def sleep_until_evening():
@@ -31,11 +31,11 @@ class TimeOperator:
         time.sleep(int(target_time - current_time) + 36000)
 
     @staticmethod
-    def time_gateway():
+    def time_gateway(messageTime):
 
         current_time = datetime.datetime.now().time()
 
-        set_time = datetime.time(TimeOperator.secondMessageTime[0], TimeOperator.secondMessageTime[1])
+        set_time = datetime.time(messageTime[0], messageTime[1])
 
         if (current_time >= set_time):
             return True
