@@ -30,7 +30,7 @@ class SheduleOperator:
 
         self.day=(int)(time.strftime('%w'))
 
-        if(self.up_state_check()=="true" and TimeOperator.time_gateway([10, 0])):
+        if(self.up_state_check()==True and TimeOperator.time_gateway([10, 0])):
 
             self.schedule_handler(1)
 
@@ -82,16 +82,18 @@ class SheduleOperator:
 
         responce = requests.get(self.url_KBP, headers=self.headers)
         soup=BS(responce.text, "lxml")
-    
-        zameny = soup.find(class_="zamena").find_all("th")
 
-        if ("Замен нет" in zameny[self.day+1].get_text()):
-            return "true"
-        elif (zameny[self.day+1].find("label")!=None):
-            return "true"
+        zameny = soup.find(class_="zamena")
+        if zameny is not None:
+            zameny = zameny.find_all("th")
+
+            if zameny and ("Замен нет" in zameny[self.day+1].get_text() or zameny[self.day+1].find("label") is not None):
+                return True
+            else:
+                return False
         else:
-            return "false"
-
+            return False
+    
     def print_schedule(self):
 
         responce = requests.get(self.url_KBP, headers=self.headers)
