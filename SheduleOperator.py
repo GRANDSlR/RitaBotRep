@@ -110,7 +110,7 @@ class SheduleOperator:
         lesson = soup.find_all("tr")
         for i in range(2, 17):
             subject = lesson[i].find_all("td")
-            if (subject[self.day + self.sheduleDayFlag].find("div", class_="empty-pair")==None or subject[self.day + self.sheduleDayFlag].find("div", class_=f"pair lw_{self.day} added")!=None):
+            if (subject[self.day + self.sheduleDayFlag].find("div", class_="empty-pair")==None or subject[self.day + self.sheduleDayFlag].find("div", class_=f"pair lw_{self.day + self.sheduleDayFlag} added")!=None):
                 num = subject[0].text
                 if(subject[self.day + self.sheduleDayFlag].find("div", class_=f"pair lw_{self.day + self.sheduleDayFlag} added")==None):
                     sub = subject[self.day + self.sheduleDayFlag].find("div", class_="subject").find("a").text
