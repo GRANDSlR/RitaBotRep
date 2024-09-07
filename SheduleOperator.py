@@ -8,7 +8,7 @@ class SheduleOperator:
 
     def __init__(self, userId, bot, FileOperatorObject):
 
-        self.url_KBP='https://kbp.by/rasp/timetable/view_beta_kbp/?page=stable&cat=group&id=53'
+        self.url_KBP='https://kbp.by/rasp/timetable/view_beta_kbp/?page=stable&cat=group&id=60'
 
         self.headers = {
             "User-Agent":
